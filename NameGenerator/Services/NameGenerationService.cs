@@ -8,7 +8,7 @@ namespace NameGenerator.Services
 {
     public class NameGenerationService
     {
-        private static readonly Random _random = new Random();
+        private static readonly Random _random = new();
         private readonly NameData _nameData;
 
         public NameGenerationService()
@@ -31,7 +31,13 @@ namespace NameGenerator.Services
                 {
                     // Use provided title or default title if not provided.
                     string title = string.IsNullOrWhiteSpace(options.AcademicTitle) ? "Mgr." : options.AcademicTitle;
-                    fullName = $"{title} {fullName}";
+
+                    if (title == "PhD.") {
+                        fullName = $"{fullName}, {title}";
+                    }
+                    else {
+                        fullName = $"{title} {fullName}";
+                    }           
                 }
 
                 names.Add(fullName);
@@ -46,12 +52,12 @@ namespace NameGenerator.Services
             List<TableName> firstNames;
             List<TableName> lastNames;
 
-            if (gender.ToLower() == "male")
+            if (gender.Equals("male", StringComparison.CurrentCultureIgnoreCase))
             {
                 firstNames = _nameData.MaleNames;
                 lastNames = _nameData.MaleLastNames;
             }
-            else if (gender.ToLower() == "female")
+            else if (gender.Equals("female", StringComparison.CurrentCultureIgnoreCase))
             {
                 firstNames = _nameData.FemaleNames;
                 lastNames = _nameData.FemaleLastNames;
@@ -82,7 +88,7 @@ namespace NameGenerator.Services
         }
 
         // Helper method to generate a random name from a list using cumulative probability.
-        private string GenerateRandomName(List<TableName> tableNames)
+        private static string GenerateRandomName(List<TableName> tableNames)
         {
             double randomValue = _random.NextDouble();
             double cumulative = 0.0;
